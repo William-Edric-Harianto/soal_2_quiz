@@ -21,7 +21,10 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            Soal_2_quizTheme {
+            Soal_2_quizTheme (
+                darkTheme = false,
+                dynamicColor = false
+            ){
                 Scaffold(modifier = Modifier.fillMaxSize()) {
                     controllerView()
                 }

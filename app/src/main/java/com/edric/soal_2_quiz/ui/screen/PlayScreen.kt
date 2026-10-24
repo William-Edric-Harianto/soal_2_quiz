@@ -16,17 +16,16 @@ import com.edric.soal_2_quiz.viewmodel.PlayViewModel
 @Composable
 fun playView(
     playViewModel: PlayViewModel = viewModel(),
-    controllerViewModel: ControllerViewModel = viewModel(),
-    importedQuestionAmount: Int
+    controllerViewModel: ControllerViewModel = viewModel()
 ) {
+    val questionAmount by controllerViewModel.questionAmount.collectAsState()
     val currentQuestionIndex by playViewModel.currentQuestionIndex.collectAsState()
     val currentQuestionText by playViewModel.currentQuestionText.collectAsState()
     val currentOptions by playViewModel.currentOptions.collectAsState()
     val selectedAnswer by playViewModel.selectedAnswer.collectAsState()
 
-    // Initialize the quiz safely once when the screen loads
-    LaunchedEffect(importedQuestionAmount) {
-        playViewModel.initializeQuiz(importedQuestionAmount)
+    LaunchedEffect(questionAmount) {
+        playViewModel.initializeQuiz(questionAmount)
     }
 
     Column(
@@ -35,7 +34,7 @@ fun playView(
             .fillMaxSize()
             .padding(24.dp)
     ) {
-        Spacer(modifier = Modifier.height(64.dp))
+        Spacer(modifier = Modifier.weight(1f))
 
         Text(
             text = "Question ${currentQuestionIndex + 1}",
@@ -52,13 +51,12 @@ fun playView(
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        // Render multiple choice options
         currentOptions.forEach { option ->
             val isSelected = option == selectedAnswer
             Button(
                 onClick = { playViewModel.selectAnswer(option) },
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = if (isSelected) Color(0xFF3F51B5) else Color(0xFFE8EAF6),
+                    containerColor = if (isSelected) Color(0xFF4C5B84) else Color(0xFFE8EAF6),
                     contentColor = if (isSelected) Color.White else Color.Black
                 ),
                 modifier = Modifier
@@ -69,9 +67,8 @@ fun playView(
             }
         }
 
-        Spacer(modifier = Modifier.weight(1f))
+        Spacer(modifier = Modifier.height(16.dp))
 
-        // Next Button
         Button(
             onClick = {
                 playViewModel.submitAnswer {
@@ -80,7 +77,7 @@ fun playView(
             },
             enabled = selectedAnswer != null,
             colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFF3F51B5),
+                containerColor = Color(0xFF4C5B84),
                 disabledContainerColor = Color(0xFFEEEEEE),
                 disabledContentColor = Color.LightGray
             ),
@@ -88,5 +85,6 @@ fun playView(
         ) {
             Text("Next")
         }
+        Spacer(modifier = Modifier.weight(1f))
     }
 }

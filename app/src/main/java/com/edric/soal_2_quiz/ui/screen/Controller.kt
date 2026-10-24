@@ -37,7 +37,7 @@ fun controllerView(
         ) {
             when (page) {
                 Page.START -> startView()
-                Page.PLAY -> playView(importedQuestionAmount = questionAmount)
+                Page.PLAY -> playView()
                 Page.FINISH -> finishView()
             }
         }

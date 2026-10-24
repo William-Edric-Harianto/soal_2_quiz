@@ -36,14 +36,14 @@ class ControllerViewModel : ViewModel() {
         }
     }
 
+    fun finishQuiz() {
+        _page.update { Page.FINISH }
+    }
+
     fun restartQuiz() {
         _inputText.update { "" }
         _questionAmount.update { 0 }
         _isError.update { false }
         _page.update { Page.START }
-    }
-
-    fun finishQuiz() {
-        _page.update { Page.FINISH }
     }
 }

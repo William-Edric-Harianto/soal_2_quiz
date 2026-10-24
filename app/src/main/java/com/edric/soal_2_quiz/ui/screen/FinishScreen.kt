@@ -21,10 +21,9 @@ fun finishView(
     controllerViewModel: ControllerViewModel = viewModel()
 ) {
     val correctAmount by playViewModel.correctAmount.collectAsState()
-    val questionAmount by playViewModel.questionAmount.collectAsState()
+    val questionAmount by controllerViewModel.questionAmount.collectAsState()
     val questionSummaries by playViewModel.questionSummaries.collectAsState()
 
-    // Filter to only display incorrect answers
     val wrongAnswers = questionSummaries.filter { !it.isCorrect }
     val scrollState = rememberScrollState()
 
@@ -32,7 +31,7 @@ fun finishView(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.fillMaxSize().padding(24.dp)
     ) {
-        Spacer(modifier = Modifier.height(64.dp))
+        Spacer(modifier = Modifier.weight(1f))
 
         Text(
             text = "Quiz Finished!",
@@ -63,7 +62,6 @@ fun finishView(
                     .fillMaxWidth()
                     .verticalScroll(scrollState)
             ) {
-                // Using a standard for loop
                 for (summary in wrongAnswers) {
                     Column(
                         modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)
@@ -89,16 +87,19 @@ fun finishView(
             }
         }
 
-        Spacer(modifier = Modifier.weight(1f))
-
         Button(
             onClick = {
                 playViewModel.clearQuiz()
                 controllerViewModel.restartQuiz()
             },
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color(0xFF4C5B84)
+            ),
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Restart Quiz")
         }
+
+        Spacer(modifier = Modifier.weight(1f))
     }
 }

@@ -9,7 +9,6 @@ import kotlinx.coroutines.flow.update
 
 class PlayViewModel : ViewModel() {
 
-    // Dummy data based on your mockups
     private val allQuestions = listOf(
         Question("Ibu Kota Di Indonesia?", "Jakarta", listOf("Surabaya", "Bandung", "Medan")),
         Question("Ada berapa hari dalam seminggu?", "7", listOf("5", "6", "11")),
@@ -18,8 +17,7 @@ class PlayViewModel : ViewModel() {
         Question("Natal dirayakan pada bulan?", "Desember", listOf("Januari", "Agustus", "Oktober"))
     )
 
-    private val _questionAmount = MutableStateFlow(0)
-    val questionAmount = _questionAmount.asStateFlow()
+    private var activeQuestions = emptyList<Question>()
 
     private val _correctAmount = MutableStateFlow(0)
     val correctAmount = _correctAmount.asStateFlow()
@@ -27,7 +25,6 @@ class PlayViewModel : ViewModel() {
     private val _questionSummaries = MutableStateFlow<List<QuestionSummary>>(emptyList())
     val questionSummaries = _questionSummaries.asStateFlow()
 
-    // Active Question States
     private val _currentQuestionIndex = MutableStateFlow(0)
     val currentQuestionIndex = _currentQuestionIndex.asStateFlow()
 
@@ -40,20 +37,22 @@ class PlayViewModel : ViewModel() {
     private val _selectedAnswer = MutableStateFlow<String?>(null)
     val selectedAnswer = _selectedAnswer.asStateFlow()
 
-    fun initializeQuiz(newAmount: Int) {
-        if (_questionAmount.value == 0) {
-            _questionAmount.update { newAmount }
+    fun initializeQuiz(amount: Int) {
+        if (activeQuestions.isEmpty() && amount > 0) {
             _correctAmount.update { 0 }
             _questionSummaries.update { emptyList() }
             _currentQuestionIndex.update { 0 }
+
+            activeQuestions = allQuestions.shuffled().take(amount)
+
             loadQuestion()
         }
     }
 
     private fun loadQuestion() {
         val index = _currentQuestionIndex.value
-        if (index < _questionAmount.value && index < allQuestions.size) {
-            val q = allQuestions[index]
+        if (index < activeQuestions.size) {
+            val q = activeQuestions[index]
             _currentQuestionText.value = q.question
             _currentOptions.value = (q.wrongAnswerList + q.correctAnswer).shuffled()
             _selectedAnswer.value = null
@@ -66,7 +65,7 @@ class PlayViewModel : ViewModel() {
 
     fun submitAnswer(onFinish: () -> Unit) {
         val index = _currentQuestionIndex.value
-        val q = allQuestions.getOrNull(index)
+        val q = activeQuestions.getOrNull(index)
         val ans = _selectedAnswer.value
 
         if (q != null && ans != null) {
@@ -79,7 +78,7 @@ class PlayViewModel : ViewModel() {
             }
         }
 
-        if (index + 1 >= _questionAmount.value || index + 1 >= allQuestions.size) {
+        if (index + 1 >= activeQuestions.size) {
             onFinish()
         } else {
             _currentQuestionIndex.value += 1
@@ -88,9 +87,9 @@ class PlayViewModel : ViewModel() {
     }
 
     fun clearQuiz() {
-        _questionAmount.update { 0 }
         _correctAmount.update { 0 }
         _questionSummaries.update { emptyList() }
         _currentQuestionIndex.update { 0 }
+        activeQuestions = emptyList()
     }
 }
